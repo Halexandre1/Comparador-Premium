@@ -5,19 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Comparador Premium de Boletos – OCR Edition</title>
 
-  <!-- Fontes -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-  <!-- ==== CDNs das Bibliotecas ==== -->
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@zxing/library@latest/umd/zxing.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <!-- pdf.js carregado dinamicamente no módulo PDF para controle do worker -->
 
   <style>
-    /* ==== VARIÁVEIS E TEMAS ==== */
     :root {
       --bg-primary:#0a0e1a; --bg-secondary:#0f1419; --bg-tertiary:#151b26;
       --surface-1:rgba(255,255,255,.02); --surface-2:rgba(255,255,255,.04); --surface-3:rgba(255,255,255,.06);
@@ -29,7 +25,6 @@
       --shadow-accent:0 8px 25px var(--accent-glow);
       --radius-sm:8px; --radius-md:12px; --radius-lg:16px; --radius-xl:24px;
     }
-    /* Modo Claro */
     body.light-mode {
       --bg-primary:#f0f4f8; --bg-secondary:#e4eaf2; --bg-tertiary:#d8e2ee;
       --surface-1:rgba(0,0,0,.02); --surface-2:rgba(0,0,0,.04); --surface-3:rgba(0,0,0,.07);
@@ -39,7 +34,6 @@
     body.light-mode .footer { background:#e4eaf2; }
     body.light-mode .card textarea { color:var(--text-primary); }
 
-    /* ==== RESET ==== */
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     html{scroll-behavior:smooth;}
     body{
@@ -59,7 +53,7 @@
 
     .container{max-width:1200px;margin:0 auto;padding:2rem;position:relative;z-index:1;flex:1;width:100%;}
 
-    /* ==== CABEÇALHO ==== */
+    /* CABEÇALHO */
     .header{display:flex;align-items:center;gap:1.5rem;margin-bottom:3rem;padding:1.5rem 0;justify-content:center;}
     @media(max-width:620px){.header{flex-direction:column;text-align:center;}}
     .logo{width:64px;height:64px;border-radius:var(--radius-lg);box-shadow:var(--shadow-accent),inset 0 1px 0 rgba(255,255,255,.2);position:relative;overflow:hidden;flex-shrink:0;}
@@ -72,8 +66,6 @@
     }
     .header-content p{color:var(--text-secondary);font-size:1.1rem;max-width:600px;font-weight:400;}
     .tip-realtime{font-weight:600;color:var(--accent);}
-
-    /* Toggle tema */
     .theme-toggle{
       margin-left:auto;background:var(--surface-2);border:1px solid var(--border);
       color:var(--text-primary);width:40px;height:40px;border-radius:50%;cursor:pointer;
@@ -82,7 +74,7 @@
     }
     .theme-toggle:hover{background:var(--accent);color:#000;transform:scale(1.1);}
 
-    /* ==== LAYOUT E CARDS ==== */
+    /* LAYOUT */
     .input-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:2rem;}
     @media(max-width:768px){.input-grid{grid-template-columns:1fr;}}
     .card{
@@ -94,39 +86,27 @@
     .card-header{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--border);}
     .card-header h2{font-size:1.2rem;font-weight:700;color:var(--text-primary);text-transform:uppercase;letter-spacing:.05em;margin:0;}
     .card-header .icon{width:32px;height:32px;border-radius:var(--radius-sm);background:var(--surface-3);display:flex;align-items:center;justify-content:center;font-size:16px;border:1px solid var(--border);}
-    
     .scanner-status{margin-left:auto;font-size:.8rem;font-weight:600;color:var(--accent);display:none;background:rgba(0,212,255,.1);padding:4px 10px;border-radius:20px;border:1px solid rgba(0,212,255,.2);animation:pulse 1.5s infinite;}
     @keyframes pulse{0%{opacity:.7;}50%{opacity:1;}100%{opacity:.7;}}
+    .btn-attach{background:var(--surface-2);border:1px solid var(--border);color:var(--accent);font-size:.8rem;font-weight:600;padding:4px 10px;border-radius:var(--radius-sm);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:4px;}
+    .btn-attach:hover{background:var(--surface-3);border-color:var(--accent);color:var(--text-primary);}
 
-    /* Botão de anexo */
-    .btn-attach {
-      background: var(--surface-2); border: 1px solid var(--border); color: var(--accent);
-      font-size: 0.8rem; font-weight: 600; padding: 4px 10px; border-radius: var(--radius-sm);
-      cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 4px;
-    }
-    .btn-attach:hover { background: var(--surface-3); border-color: var(--accent); color: var(--text-primary); }
-
-    /* ==== TEXTAREA E CONTADOR ==== */
+    /* TEXTAREA */
     .card textarea{
       width:100%;height:120px;border:1px solid var(--border);border-radius:var(--radius-md);
       padding:1rem 1.25rem;font-size:1.05rem;font-family:'Courier New',Courier,monospace;
       color:var(--text-primary);background-color:var(--surface-2);resize:vertical;
-      transition:all .3s ease;backdrop-filter:blur(5px);outline:none;
-      letter-spacing: 1px;
+      transition:all .3s ease;backdrop-filter:blur(5px);outline:none;letter-spacing:1px;
     }
     .card textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,212,255,.1),var(--shadow-md);background:var(--surface-3);}
-    .card textarea::placeholder{color:var(--text-muted); letter-spacing: normal;}
+    .card textarea::placeholder{color:var(--text-muted);letter-spacing:normal;}
     .card textarea.dragover{border-color:var(--accent);background:rgba(0,212,255,.05);box-shadow:inset 0 0 20px rgba(0,212,255,.1);}
     .card textarea:disabled{opacity:.7;cursor:wait;}
-
-    .digit-counter{
-      font-size:.8rem;font-weight:600;margin-top:.5rem;text-align:right;
-      color:var(--text-muted);transition:color .2s;
-    }
+    .digit-counter{font-size:.8rem;font-weight:600;margin-top:.5rem;text-align:right;color:var(--text-muted);transition:color .2s;}
     .digit-counter.ok{color:var(--success);}
     .digit-counter.warn{color:var(--error);}
 
-    /* ==== BARRA DE AÇÕES ==== */
+    /* AÇÕES */
     .action-bar{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;margin-bottom:.5rem;}
     .btn{padding:1rem 2rem;border:none;border-radius:var(--radius-md);font-size:1rem;font-weight:600;cursor:pointer;transition:all .3s ease;display:flex;align-items:center;justify-content:center;gap:.5rem;text-transform:uppercase;letter-spacing:.05em;}
     .btn:disabled{opacity:.6;cursor:not-allowed;}
@@ -137,43 +117,28 @@
     .btn-secondary:not(:disabled):hover{background:var(--surface-3);border-color:var(--accent);transform:translateY(-1px);}
     .btn-export{background:linear-gradient(135deg,#7b2ff7,#5b00d4);color:#fff;border:none;}
     .btn-export:not(:disabled):hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(123,47,247,.4);}
-
     .tip{font-size:.85rem;color:var(--text-muted);text-align:center;margin-bottom:2rem;}
     kbd{background:var(--surface-3);padding:.2rem .5rem;border-radius:4px;border:1px solid var(--border);font-family:monospace;}
 
-    /* ==== CARD DE RESULTADO ==== */
+    /* RESULTADO */
     #resultado-card{display:none;margin-top:2rem;}
     .secao-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;margin-top:2rem;}
     .secao-header:first-child{margin-top:0;}
     .secao-titulo{font-size:.85rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--text-secondary);margin:0;}
     .btn-icon-copy{background:var(--surface-2);border:1px solid var(--border);cursor:pointer;color:var(--accent);font-size:.8rem;font-weight:600;display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:var(--radius-sm);transition:all .2s;}
     .btn-icon-copy:hover{background:var(--surface-3);border-color:var(--accent);color:var(--text-primary);}
-
     .digits-display{font-family:'Courier New',Courier,monospace;font-size:1.2rem;font-weight:500;background:var(--surface-1);border:1px solid var(--border);border-radius:var(--radius-md);padding:1.5rem;word-break:break-all;line-height:2;letter-spacing:2px;min-height:80px;box-shadow:inset 0 2px 10px rgba(0,0,0,.2);}
     .digit-diff{background-color:rgba(255,71,87,.2);color:var(--error);font-weight:800;border-radius:4px;padding:2px 4px;border:1px solid rgba(255,71,87,.3);}
     .digit-pad{color:var(--text-muted);opacity:.5;background:none;border:1px dashed var(--border);}
-
     .status-badge{display:inline-flex;align-items:center;gap:10px;padding:1rem 1.5rem;border-radius:var(--radius-md);font-size:1.1rem;font-weight:700;width:100%;justify-content:center;}
     .status-ok{background:rgba(0,255,136,.1);color:var(--success);border:1px solid rgba(0,255,136,.3);}
     .status-diff{background:rgba(255,71,87,.1);color:var(--error);border:1px solid rgba(255,71,87,.3);}
-
-    /* Badge de validação do dígito verificador */
-    .validacao-box{
-      background:var(--surface-1);border:1px solid var(--border);
-      border-radius:var(--radius-md);padding:1.25rem;margin-top:1rem;
-    }
+    .validacao-box{background:var(--surface-1);border:1px solid var(--border);border-radius:var(--radius-md);padding:1.25rem;margin-top:1rem;}
     .validacao-item{display:flex;align-items:center;gap:.75rem;font-size:.95rem;padding:.4rem 0;}
     .validacao-ok{color:var(--success);}
     .validacao-err{color:var(--error);}
     .validacao-warn{color:var(--warning);}
-
-    .tipo-badge{
-      display:inline-flex;align-items:center;gap:6px;
-      padding:4px 12px;border-radius:20px;font-size:.78rem;font-weight:700;
-      background:rgba(0,212,255,.1);color:var(--accent);border:1px solid rgba(0,212,255,.25);
-      margin-left:.75rem;vertical-align:middle;
-    }
-
+    .tipo-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:.78rem;font-weight:700;background:rgba(0,212,255,.1);color:var(--accent);border:1px solid rgba(0,212,255,.25);margin-left:.75rem;vertical-align:middle;}
     .analise-box{background:var(--surface-1);border-left:4px solid var(--accent);padding:1.5rem;border-radius:0 var(--radius-md) var(--radius-md) 0;font-size:1rem;color:var(--text-primary);line-height:1.8;border:1px solid var(--border);border-left-width:4px;}
     .analise-box.alerta{border-left-color:var(--warning);background:linear-gradient(90deg,rgba(255,170,0,.05) 0%,transparent 100%);}
     .analise-box ul{margin:10px 0 0 24px;color:var(--text-secondary);}
@@ -181,25 +146,46 @@
     .analise-box strong{color:var(--text-primary);}
     .divider{border:none;border-top:1px solid var(--border);margin:2rem 0;opacity:.5;}
 
-    /* ==== HISTÓRICO ==== */
-    .historico-section{margin-top:2rem;}
-    .historico-toggle{
-      display:flex;align-items:center;gap:.75rem;cursor:pointer;
-      background:var(--surface-1);border:1px solid var(--border);
-      border-radius:var(--radius-md);padding:1rem 1.5rem;font-weight:600;
-      color:var(--text-secondary);transition:all .2s;
+    /* ==== NOVO: PAINEL DE INFORMAÇÕES DO BOLETO ==== */
+    .info-boleto-grid{
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+      gap:1rem;margin-top:0;
     }
+    .info-boleto-card{
+      background:var(--surface-2);border:1px solid var(--border);
+      border-radius:var(--radius-md);padding:1rem 1.25rem;
+      display:flex;flex-direction:column;gap:.25rem;
+      transition:background .2s;
+    }
+    .info-boleto-card:hover{background:var(--surface-3);}
+    .info-boleto-label{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);}
+    .info-boleto-value{font-size:1rem;font-weight:700;color:var(--text-primary);word-break:break-word;}
+    .info-boleto-value.valor-destaque{font-size:1.25rem;color:var(--success);}
+    .venc-status{display:inline-flex;align-items:center;gap:6px;padding:2px 10px;border-radius:20px;font-size:.78rem;font-weight:700;margin-top:.25rem;}
+    .venc-ok{background:rgba(0,255,136,.12);color:var(--success);border:1px solid rgba(0,255,136,.3);}
+    .venc-urgente{background:rgba(255,170,0,.12);color:var(--warning);border:1px solid rgba(255,170,0,.3);}
+    .venc-hoje{background:rgba(255,170,0,.2);color:var(--warning);border:1px solid rgba(255,170,0,.5);animation:pulse 1.5s infinite;}
+    .venc-vencido{background:rgba(255,71,87,.12);color:var(--error);border:1px solid rgba(255,71,87,.3);}
+    .venc-neutral{background:var(--surface-3);color:var(--text-muted);border:1px solid var(--border);}
+    .cod-barras-box{
+      background:var(--surface-1);border:1px solid var(--border);border-radius:var(--radius-md);
+      padding:1rem 1.25rem;margin-top:1rem;word-break:break-all;
+      font-family:'Courier New',monospace;font-size:.9rem;letter-spacing:2px;
+      color:var(--text-secondary);line-height:1.8;
+      display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;
+    }
+    .cod-barras-text{flex:1;}
+
+    /* HISTÓRICO — BUG FIX: remover display:flex duplicado */
+    .historico-section{margin-top:2rem;}
+    .historico-toggle{display:flex;align-items:center;gap:.75rem;cursor:pointer;background:var(--surface-1);border:1px solid var(--border);border-radius:var(--radius-md);padding:1rem 1.5rem;font-weight:600;color:var(--text-secondary);transition:all .2s;}
     .historico-toggle:hover{background:var(--surface-2);color:var(--text-primary);}
     .historico-toggle .arrow{transition:transform .3s;font-size:1rem;}
     .historico-toggle.open .arrow{transform:rotate(180deg);}
-    .historico-lista{display:none;margin-top:.75rem;display:flex;flex-direction:column;gap:.5rem;}
+    /* BUG FIX: remova display:flex duplicado — só usa display:none na regra base */
+    .historico-lista{display:none;margin-top:.75rem;flex-direction:column;gap:.5rem;}
     .historico-lista.visible{display:flex;}
-    .hist-item{
-      background:var(--surface-1);border:1px solid var(--border);
-      border-radius:var(--radius-md);padding:.85rem 1.25rem;
-      display:flex;align-items:center;gap:1rem;font-size:.85rem;
-      cursor:default;transition:background .2s;
-    }
+    .hist-item{background:var(--surface-1);border:1px solid var(--border);border-radius:var(--radius-md);padding:.85rem 1.25rem;display:flex;align-items:center;gap:1rem;font-size:.85rem;cursor:default;transition:background .2s;}
     .hist-item:hover{background:var(--surface-2);}
     .hist-ok{color:var(--success);font-weight:700;min-width:80px;}
     .hist-diff{color:var(--error);font-weight:700;min-width:80px;}
@@ -207,7 +193,7 @@
     .hist-preview{font-family:'Courier New',monospace;font-size:.8rem;color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;}
     .hist-empty{color:var(--text-muted);font-style:italic;padding:.75rem 0;text-align:center;}
 
-    /* ==== MODAL DE ROTAÇÃO ==== */
+    /* MODAL */
     .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;z-index:1000;opacity:0;transition:opacity .3s ease;}
     .modal-overlay.active{display:flex;opacity:1;}
     .modal-content{background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius-xl);padding:2.5rem;width:95%;max-width:700px;box-shadow:var(--shadow-lg);position:relative;}
@@ -221,20 +207,14 @@
     .btn-quick{background:var(--surface-2);border:1px solid var(--border);color:var(--text-primary);font-weight:600;padding:.5rem 1rem;border-radius:var(--radius-sm);font-size:.9rem;cursor:pointer;transition:all .2s;}
     .btn-quick:hover{background:var(--accent);color:#000;border-color:var(--accent);transform:translateY(-2px);}
 
-    /* ==== TOAST / NOTIFICAÇÃO ==== */
-    .toast{
-      position:fixed;bottom:2rem;right:2rem;background:var(--bg-secondary);
-      border:1px solid var(--border);border-radius:var(--radius-md);
-      padding:.85rem 1.5rem;font-size:.9rem;font-weight:600;
-      box-shadow:var(--shadow-lg);z-index:2000;opacity:0;
-      transform:translateY(20px);transition:all .3s ease;pointer-events:none;
-    }
+    /* TOAST */
+    .toast{position:fixed;bottom:2rem;right:2rem;background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius-md);padding:.85rem 1.5rem;font-size:.9rem;font-weight:600;box-shadow:var(--shadow-lg);z-index:2000;opacity:0;transform:translateY(20px);transition:all .3s ease;pointer-events:none;}
     .toast.show{opacity:1;transform:translateY(0);}
     .toast.success{border-left:4px solid var(--success);color:var(--success);}
     .toast.error{border-left:4px solid var(--error);color:var(--error);}
     .toast.info{border-left:4px solid var(--accent);color:var(--accent);}
 
-    /* ==== RODAPÉ ==== */
+    /* RODAPÉ */
     .footer{padding:2rem;border-top:1px solid var(--border);color:var(--text-muted);font-size:.9rem;text-align:center;margin-top:auto;width:100%;background:var(--bg-primary);z-index:1;}
   </style>
 </head>
@@ -242,10 +222,9 @@
 
 <div class="container">
 
-  <!-- ==== CABEÇALHO ==== -->
   <header class="header" role="banner">
     <div class="logo">
-      <img src="https://raw.githubusercontent.com/Halexandre1/PDF_PRO/main/HERBERT.jpg" alt="Logótipo HAlexandre">
+      <img src="https://raw.githubusercontent.com/Halexandre1/PDF_PRO/main/HERBERT.jpg" alt="Logótipo HAlexandre" loading="lazy">
     </div>
     <div class="header-content">
       <h1>Comparador Premium</h1>
@@ -254,7 +233,6 @@
     <button class="theme-toggle" id="btn-theme" aria-label="Alternar modo escuro/claro" title="Alternar tema">🌙</button>
   </header>
 
-  <!-- ==== CAMPOS DE ENTRADA ==== -->
   <main role="main">
     <div class="input-grid">
       <!-- Campo SIENGE -->
@@ -263,34 +241,25 @@
           <div class="icon">📄</div>
           <h2>SIENGE</h2>
         </div>
-        <textarea id="inp-sienge"
-          aria-label="Chave gerada pelo SIENGE"
-          placeholder="Cole aqui a chave gerada pelo SIENGE..."></textarea>
+        <textarea id="inp-sienge" aria-label="Chave gerada pelo SIENGE" placeholder="Cole aqui a chave gerada pelo SIENGE..."></textarea>
         <div class="digit-counter" id="counter-sienge">0 dígitos</div>
       </div>
 
-      <!-- Campo BOLETO (com OCR / PDF / Anexo) -->
+      <!-- Campo BOLETO -->
       <div class="card" id="card-boleto" role="region" aria-label="Campo Boleto">
         <div class="card-header">
           <div class="icon">🏦</div>
           <h2>BOLETO</h2>
-          
-          <!-- NOVO: Botão de Anexo para dispositivos/navegadores que bloqueiam colar ficheiros -->
-          <label for="file-upload" class="btn-attach" title="Procurar PDF ou Imagem no computador">
-            📎 Anexar
-          </label>
+          <label for="file-upload" class="btn-attach" title="Procurar PDF ou Imagem no computador">📎 Anexar</label>
           <input type="file" id="file-upload" accept="image/*, application/pdf" style="display:none;">
-          
           <div id="scanner-status" class="scanner-status" aria-live="polite">⏳ Lendo...</div>
         </div>
-        <textarea id="inp-boleto"
-          aria-label="Chave do boleto bancário"
-          placeholder="Cole o texto, IMAGEM (Ctrl+V), arraste um arquivo ou use o botão 'Anexar'..."></textarea>
+        <textarea id="inp-boleto" aria-label="Chave do boleto bancário" placeholder="Cole o texto, IMAGEM (Ctrl+V), arraste um arquivo ou use o botão 'Anexar'..."></textarea>
         <div class="digit-counter" id="counter-boleto">0 dígitos</div>
       </div>
     </div>
 
-    <!-- ==== AÇÕES ==== -->
+    <!-- AÇÕES -->
     <div class="action-bar" role="toolbar" aria-label="Ações principais">
       <button class="btn btn-primary" onclick="comparar()" id="btn-comparar" aria-label="Comparar chaves">🔍 Comparar</button>
       <button class="btn btn-secondary" onclick="limpar()" aria-label="Limpar todos os campos">🗑️ Limpar</button>
@@ -300,10 +269,10 @@
       Dica: cole imagens (<kbd>Ctrl+V</kbd>), arraste PDFs ou use <kbd>Ctrl+Enter</kbd> para comparar • <kbd>Esc</kbd> para limpar
     </p>
 
-    <!-- ==== ÁREA DE RESULTADO ==== -->
+    <!-- RESULTADO -->
     <div class="card" id="resultado-card" role="region" aria-label="Resultado da comparação" aria-live="polite">
 
-      <!-- SIENGE normalizado visualmente -->
+      <!-- SIENGE normalizado -->
       <div class="secao-header">
         <h3 class="secao-titulo">SIENGE (Normalizado) <span id="tipo-badge-sienge"></span></h3>
         <button class="btn-icon-copy" onclick="copiarChave('sienge', this)" aria-label="Copiar dígitos do SIENGE">📋 Copiar Limpa</button>
@@ -312,7 +281,7 @@
 
       <hr class="divider" />
 
-      <!-- BOLETO normalizado visualmente -->
+      <!-- BOLETO normalizado -->
       <div class="secao-header">
         <h3 class="secao-titulo">BOLETO (Normalizado) <span id="tipo-badge-boleto"></span></h3>
         <button class="btn-icon-copy" onclick="copiarChave('boleto', this)" aria-label="Copiar dígitos do Boleto">📋 Copiar Limpa</button>
@@ -327,6 +296,16 @@
 
       <hr class="divider" />
 
+      <!-- ==== NOVO: INFORMAÇÕES DO BOLETO ==== -->
+      <div class="secao-header">
+        <h3 class="secao-titulo">📋 Informações Decodificadas do Boleto</h3>
+      </div>
+      <div id="out-info-boleto">
+        <div style="color:var(--text-muted);font-size:.9rem;font-style:italic;">— Disponível após comparação com boleto válido —</div>
+      </div>
+
+      <hr class="divider" />
+
       <!-- Validação Matemática -->
       <div class="secao-header"><h3 class="secao-titulo">Validação Matemática (Dígito Verificador)</h3></div>
       <div class="validacao-box" id="out-validacao" aria-label="Resultado da validação matemática"></div>
@@ -338,7 +317,7 @@
       <div class="analise-box" id="out-analise"></div>
     </div>
 
-    <!-- ==== HISTÓRICO ==== -->
+    <!-- HISTÓRICO -->
     <div class="historico-section" id="historico-section" role="region" aria-label="Histórico de comparações">
       <div class="historico-toggle" id="historico-toggle" role="button" tabindex="0" aria-expanded="false">
         <span>🕒 Histórico de Comparações</span>
@@ -350,21 +329,16 @@
   </main>
 </div>
 
-<!-- ==== RODAPÉ ==== -->
 <footer class="footer" id="signature" role="contentinfo"></footer>
-
-<!-- ==== TOAST ==== -->
 <div class="toast" id="toast" role="alert" aria-live="assertive"></div>
 
-<!-- ==== MODAL DE ROTAÇÃO ==== -->
+<!-- MODAL DE ROTAÇÃO -->
 <div class="modal-overlay" id="rotation-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
   <div class="modal-content">
     <button class="modal-close" id="btn-close-modal" aria-label="Fechar modal">&times;</button>
     <h2 id="modal-title" style="text-align:center;margin-bottom:.5rem;font-size:1.5rem;font-weight:700;">Ajustar Imagem</h2>
     <p style="text-align:center;color:var(--text-secondary);font-size:.9rem;margin-bottom:1.5rem;">Alinha o boleto para garantir leitura perfeita do código.</p>
-    <div class="rotation-preview">
-      <img id="rotatable-image" src="" alt="Preview da imagem para rotação">
-    </div>
+    <div class="rotation-preview"><img id="rotatable-image" src="" alt="Preview da imagem para rotação"></div>
     <div style="text-align:center;margin-bottom:.5rem;font-weight:600;font-size:1.1rem;">
       Ângulo: <span id="angle-display" style="color:var(--accent);">0.0°</span>
     </div>
@@ -388,26 +362,23 @@
 <script>
 'use strict';
 
-// ==== ASSINATURA DINÂMICA ====
 document.getElementById('signature').innerHTML =
   `<p>Feito por HAlexandre © ${new Date().getFullYear()} - OCR Premium Edition</p>`;
 
 // ==== ESTADO GLOBAL ====
 let chaveLimpaSienge = '';
 let chaveLimpaBoleto = '';
-let ultimoResultado  = null; 
+let ultimoResultado  = null;
 let debounceTimer    = null;
 
 // ==== UTILITÁRIOS ====
-function normalizar(txt) { return txt.replace(/\D/g, ''); }
+function normalizar(txt) { return (txt || '').replace(/\D/g, ''); }
 
 function formatarBoleto(txt) {
+  if (!txt) return '';
   const s = txt.replace(/\D/g, '');
-  if (s.length === 47) {
-    return s.replace(/^(\d{5})(\d{5})(\d{5})(\d{6})(\d{5})(\d{6})(\d)(\d{14})$/, '$1.$2 $3.$4 $5.$6 $7 $8');
-  } else if (s.length === 48) {
-    return s.replace(/^(\d{11})(\d)(\d{11})(\d)(\d{11})(\d)(\d{11})(\d)$/, '$1-$2 $3-$4 $5-$6 $7-$8');
-  }
+  if (s.length === 47) return s.replace(/^(\d{5})(\d{5})(\d{5})(\d{6})(\d{5})(\d{6})(\d)(\d{14})$/, '$1.$2 $3.$4 $5.$6 $7 $8');
+  if (s.length === 48) return s.replace(/^(\d{11})(\d)(\d{11})(\d)(\d{11})(\d)(\d{11})(\d)$/, '$1-$2 $3-$4 $5-$6 $7-$8');
   return txt;
 }
 
@@ -419,7 +390,7 @@ function showToast(msg, tipo = 'info', duracao = 3000) {
   el._timer = setTimeout(() => { el.className = 'toast'; }, duracao);
 }
 
-// ==== MODO ESCURO / CLARO ====
+// ==== TEMA ====
 (function initTheme() {
   const saved = localStorage.getItem('theme') || 'dark';
   if (saved === 'light') document.body.classList.add('light-mode');
@@ -428,27 +399,26 @@ function showToast(msg, tipo = 'info', duracao = 3000) {
 
 document.getElementById('btn-theme').addEventListener('click', () => {
   const isLight = document.body.classList.toggle('light-mode');
-  const icon = isLight ? '☀️' : '🌙';
-  document.getElementById('btn-theme').textContent = icon;
+  document.getElementById('btn-theme').textContent = isLight ? '☀️' : '🌙';
   localStorage.setItem('theme', isLight ? 'light' : 'dark');
 });
 
-// ==== CONTADOR DE DÍGITOS ====
+// ==== CONTADOR ====
 function atualizarContador(inputId, counterId) {
   const val = normalizar(document.getElementById(inputId).value);
   const n   = val.length;
   const el  = document.getElementById(counterId);
   el.textContent = `${n} dígitos`;
-  el.className = 'digit-counter';
+  el.className   = 'digit-counter';
   if (n === 47 || n === 48) el.classList.add('ok');
-  else if (n > 0 && n !== 47 && n !== 48) el.classList.add('warn');
+  else if (n > 0) el.classList.add('warn');
 }
 
-// ==== DETECÇÃO DO TIPO DE BOLETO ====
+// ==== TIPO DE BOLETO ====
 function detectarTipoBoleto(chave) {
   if (!chave) return null;
   const len = chave.length;
-  if (len === 47) return { tipo: 'Bancário', descricao: '47 dígitos – Boleto Bancário (Módulo 10/11)', modulo: 'bancario' };
+  if (len === 47) return { tipo: 'Bancário',               descricao: '47 dígitos – Boleto Bancário (Módulo 10/11)', modulo: 'bancario' };
   if (len === 48) return { tipo: 'Convênio/Concessionária', descricao: '48 dígitos – Convênio/Concessionária (Módulo 10)', modulo: 'convenio' };
   return { tipo: 'Desconhecido', descricao: `${len} dígitos – formato não reconhecido`, modulo: null };
 }
@@ -458,7 +428,189 @@ function renderTipoBadge(info) {
   return `<span class="tipo-badge" title="${info.descricao}">${info.tipo}</span>`;
 }
 
-// ==== VALIDAÇÃO MÓDULO 10 ====
+// ==== TABELA DE BANCOS BRASILEIROS ====
+const BANCO_NOMES = {
+  '001':'Banco do Brasil','003':'BNDES','004':'BNB','007':'BNDES (Debentures)',
+  '033':'Santander','036':'Banco BBI','041':'Banrisul','047':'Banese',
+  '069':'Crefisa','070':'BRB','077':'Banco Inter','084':'UniPrime Norte do Paraná',
+  '085':'Cecred / Ailos','094':'Banco Finaxis','096':'Banco BM&F',
+  '099':'Uniprime Central','104':'Caixa Econômica Federal','107':'Banco BOCOM BBM',
+  '120':'Rodobens','133':'Cresol','136':'Unicred','197':'Stone Pagamentos',
+  '208':'BTG Pactual','212':'Banco Original','218':'BS2','224':'Fibra',
+  '237':'Bradesco','243':'Banco Máxima','260':'Nu Pagamentos (Nubank)',
+  '274':'Money Plus','290':'PagSeguro Internet','318':'BMG','320':'China CC Bank',
+  '323':'MercadoPago','336':'C6 Bank','341':'Itaú','348':'XP Investimentos',
+  '364':'Gerencianet / Efí','389':'Mercantil do Brasil','394':'Bradesco Financiamentos',
+  '399':'Kirton Bank','422':'Safra','435':'Delcred','450':'Fitbank','461':'Asaas',
+  '473':'Caixa Geral - Filial','479':'Citibank N.A.','505':'Credit Suisse (BRL)',
+  '536':'Neon Pagamentos','545':'Senso','600':'Luso Brasileiro','604':'Industrial do Brasil',
+  '610':'VR Pagamentos','611':'Paulista','613':'Omni Banco','623':'Pan',
+  '626':'C6 Consignado','630':'Intercap','633':'Rendimento','637':'Sofisa',
+  '643':'Pine','652':'Itaú Unibanco','655':'Votorantim','707':'Daycoval',
+  '735':'Banco Pottencial','739':'Cetelem','741':'Ribeirão Preto','745':'Citibank',
+  '746':'Modal','748':'Sicredi','752':'BNP Paribas','755':'BofA Merrill Lynch',
+  '756':'Sicoob','769':'Haitong','777':'Guide Investimentos','782':'Banco Rendimento',
+  '784':'OLÉ Consignado','785':'Itibank','791':'BIC Banco'
+};
+
+// ==== DECODIFICAÇÃO DO BOLETO (NOVO) ====
+function decodificarBoleto(chave) {
+  if (!chave || (chave.length !== 47 && chave.length !== 48)) return null;
+  const info = {};
+
+  if (chave.length === 47) {
+    info.tipo      = 'Bancário';
+    info.codigoBanco = chave.substring(0, 3);
+    info.nomeBanco = BANCO_NOMES[info.codigoBanco] || `Banco ${info.codigoBanco} (não catalogado)`;
+    info.moeda     = chave[3] === '9' ? 'Real (BRL)' : `Código ${chave[3]}`;
+
+    // Campo 5 da linha digitável = posições 33–46 → [fator venc (4)] + [valor (10)]
+    const c5      = chave.substring(33, 47);
+    const fatorVenc = c5.substring(0, 4);
+    const valorStr  = c5.substring(4, 14);
+
+    // Reconstruir código de barras (44 dígitos)
+    // Formato: banco(3)+moeda(1)+dv(1)+campo5(14)+livre1(5)+livre2(10)+livre3(5) (= pos campo1+campo2+campo3 sem DVs)
+    const dv  = chave[32];
+    const lv1 = chave.substring(0, 4) + chave.substring(5, 10);   // 9 → 9 dígitos  (banco+moeda+livre sem DV)
+    // Código de barras = banco(3)+moeda(1)+dvGeral(1)+fator(4)+valor(10)+livre1(5)+livre2(10)+livre3(5) [44 dígitos]
+    info.codigoBarras = chave.substring(0,3) + chave[3] + dv + c5
+      + chave.substring(4,9) + chave.substring(10,20) + chave.substring(21,31);
+
+    // Valor
+    const valorCents = parseInt(valorStr, 10);
+    if (isNaN(valorCents) || valorCents === 0) {
+      info.valor    = 'Valor em aberto';
+      info.valorNum = null;
+    } else {
+      info.valorNum = valorCents / 100;
+      info.valor    = info.valorNum.toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
+    }
+
+    // Vencimento
+    const fator = parseInt(fatorVenc, 10);
+    if (isNaN(fator) || fator === 0) {
+      info.vencimento     = 'Sem vencimento definido';
+      info.vencimentoDate = null;
+      info.statusVenc     = 'neutral';
+      info.statusVencLabel = '—';
+    } else if (fator === 9999) {
+      info.vencimento     = 'Não vence (à vista)';
+      info.vencimentoDate = null;
+      info.statusVenc     = 'neutral';
+      info.statusVencLabel = 'À vista';
+    } else {
+      // Base: 07/10/1997 — FEBRABAN
+      // O fator vai de 1000 a 9999 e depois recomeça em 1000 (novo ciclo = +9000 dias)
+      // O 1º ciclo encerrou em 21/02/2025 (fator 9999).
+      // Heurística: se a data calculada for > 1 ano no passado, é o novo ciclo.
+      const base = new Date(1997, 9, 7);
+      let venc   = new Date(base.getTime() + fator * 86_400_000);
+      const threshold = new Date();
+      threshold.setFullYear(threshold.getFullYear() - 1); // 1 ano atrás
+      if (venc < threshold) {
+        // Novo ciclo do fator de vencimento (rollover pós-21/02/2025)
+        venc = new Date(base.getTime() + (fator + 9000) * 86_400_000);
+      }
+      const hoje = new Date(); hoje.setHours(0,0,0,0); venc.setHours(0,0,0,0);
+      const diffDias = Math.round((venc - hoje) / 86_400_000);
+      info.vencimentoDate = venc;
+      info.vencimento     = venc.toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric' });
+      if      (diffDias < 0)  { info.statusVenc = 'vencido';  info.statusVencLabel = `Vencido há ${Math.abs(diffDias)} dia(s)`; }
+      else if (diffDias === 0){ info.statusVenc = 'hoje';     info.statusVencLabel = '⚠️ Vence HOJE!'; }
+      else if (diffDias <= 3) { info.statusVenc = 'urgente';  info.statusVencLabel = `Vence em ${diffDias} dia(s) ⚠️`; }
+      else                    { info.statusVenc = 'ok';       info.statusVencLabel = `Vence em ${diffDias} dia(s)`; }
+    }
+
+  } else {
+    // Convênio/Concessionária 48 dígitos
+    info.tipo        = 'Convênio/Concessionária';
+    info.codigoBanco = null;
+    const produto = chave.substring(0, 1);
+    const segmento = { '8': 'Arrecadação (Gov/Concessionária)', '9': 'Convênio Bancário' }[produto] || 'Segmento desconhecido';
+    info.nomeBanco   = segmento;
+    info.moeda       = '—';
+
+    // Valor: posições 5–14 (10 dígitos) para produto 8
+    const valorStr   = chave.substring(4, 14);
+    const valorCents = parseInt(valorStr, 10);
+    if (isNaN(valorCents) || valorCents === 0) {
+      info.valor    = 'Valor em aberto';
+      info.valorNum = null;
+    } else {
+      info.valorNum = valorCents / 100;
+      info.valor    = info.valorNum.toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
+    }
+    info.codigoBarras   = '— (não aplicável para convênio)';
+    info.vencimento     = 'Não disponível';
+    info.statusVenc     = 'neutral';
+    info.statusVencLabel = '—';
+  }
+
+  return info;
+}
+
+// ==== RENDERIZAR PAINEL DE INFORMAÇÕES (NOVO) ====
+function renderInfoBoleto(chave) {
+  const el = document.getElementById('out-info-boleto');
+  if (!chave || chave.length < 44) {
+    el.innerHTML = '<div style="color:var(--text-muted);font-size:.9rem;font-style:italic;">— Disponível após comparação com boleto válido —</div>';
+    return;
+  }
+  const info = decodificarBoleto(chave);
+  if (!info) {
+    el.innerHTML = `<div style="color:var(--text-muted);font-size:.9rem;">⚠️ Tamanho incomum (${chave.length} dígitos). Decodificação não aplicável.</div>`;
+    return;
+  }
+
+  const vencStatusClass = {
+    vencido: 'venc-vencido', hoje: 'venc-hoje',
+    urgente: 'venc-urgente', ok: 'venc-ok', neutral: 'venc-neutral'
+  }[info.statusVenc] || 'venc-neutral';
+
+  el.innerHTML = `
+    <div class="info-boleto-grid">
+      ${info.codigoBanco ? `
+      <div class="info-boleto-card">
+        <div class="info-boleto-label">🏦 Banco</div>
+        <div class="info-boleto-value">${info.nomeBanco}</div>
+        <div style="font-size:.75rem;color:var(--text-muted);">Código: ${info.codigoBanco} | Moeda: ${info.moeda}</div>
+      </div>` : `
+      <div class="info-boleto-card">
+        <div class="info-boleto-label">🏛️ Segmento</div>
+        <div class="info-boleto-value">${info.nomeBanco}</div>
+      </div>`}
+
+      <div class="info-boleto-card">
+        <div class="info-boleto-label">💰 Valor</div>
+        <div class="info-boleto-value valor-destaque">${info.valor}</div>
+      </div>
+
+      <div class="info-boleto-card">
+        <div class="info-boleto-label">📅 Vencimento</div>
+        <div class="info-boleto-value">${info.vencimento}</div>
+        <span class="venc-status ${vencStatusClass}">${info.statusVencLabel || '—'}</span>
+      </div>
+
+      <div class="info-boleto-card">
+        <div class="info-boleto-label">🔢 Tipo</div>
+        <div class="info-boleto-value">${info.tipo}</div>
+        <div style="font-size:.75rem;color:var(--text-muted);">${chave.length} dígitos</div>
+      </div>
+    </div>
+
+    ${info.codigoBarras && info.codigoBarras !== '— (não aplicável para convênio)' ? `
+    <div class="cod-barras-box">
+      <div>
+        <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:.5rem;">📊 Código de Barras Reconstruído (44 dígitos)</div>
+        <div class="cod-barras-text">${info.codigoBarras}</div>
+      </div>
+      <button class="btn-icon-copy" onclick="navigator.clipboard.writeText('${info.codigoBarras}').then(()=>showToast('Cód. barras copiado!','success'))" style="flex-shrink:0;">📋 Copiar</button>
+    </div>` : ''}
+  `;
+}
+
+// ==== MÓDULO 10 ====
 function modulo10(num) {
   let soma = 0, mult = 2;
   for (let i = num.length - 1; i >= 0; i--) {
@@ -470,7 +622,7 @@ function modulo10(num) {
   return resto === 0 ? 0 : 10 - resto;
 }
 
-// ==== VALIDAÇÃO MÓDULO 11 ====
+// ==== MÓDULO 11 ====
 function modulo11(num, base = 9) {
   let soma = 0, mult = 2;
   for (let i = num.length - 1; i >= 0; i--) {
@@ -484,59 +636,39 @@ function modulo11(num, base = 9) {
 
 function validarBoletoBancario(chave) {
   if (chave.length !== 47) return { valido: false, msgs: ['Comprimento inválido para boleto bancário.'] };
-  const msgs = [];
-  let valido = true;
-
-  const c1 = chave.substring(0, 9);
-  const dv1Calc = modulo10(c1);
-  const dv1Real = parseInt(chave[9]);
-  const c1ok = dv1Calc === dv1Real;
-  if (!c1ok) valido = false;
-  msgs.push({ label: 'Campo 1 (dígito verificador)', ok: c1ok, detalhe: `Calculado: ${dv1Calc} | Encontrado: ${dv1Real}` });
-
-  const c2 = chave.substring(10, 20);
-  const dv2Calc = modulo10(c2);
-  const dv2Real = parseInt(chave[20]);
-  const c2ok = dv2Calc === dv2Real;
-  if (!c2ok) valido = false;
-  msgs.push({ label: 'Campo 2 (dígito verificador)', ok: c2ok, detalhe: `Calculado: ${dv2Calc} | Encontrado: ${dv2Real}` });
-
-  const c3 = chave.substring(21, 31);
-  const dv3Calc = modulo10(c3);
-  const dv3Real = parseInt(chave[31]);
-  const c3ok = dv3Calc === dv3Real;
-  if (!c3ok) valido = false;
-  msgs.push({ label: 'Campo 3 (dígito verificador)', ok: c3ok, detalhe: `Calculado: ${dv3Calc} | Encontrado: ${dv3Real}` });
-
-  const codBarras = chave.substring(0, 4) + chave.substring(33, 47) + chave.substring(4, 9) + chave.substring(10, 20) + chave.substring(21, 31);
-  const dvGeral = parseInt(chave[32]);
-  const dvGeralCalc = modulo11(codBarras, 9);
+  const msgs = []; let valido = true;
+  const checks = [
+    { num: chave.substring(0, 9),  dv: parseInt(chave[9]),  label: 'Campo 1', fn: modulo10 },
+    { num: chave.substring(10, 20),dv: parseInt(chave[20]), label: 'Campo 2', fn: modulo10 },
+    { num: chave.substring(21, 31),dv: parseInt(chave[31]), label: 'Campo 3', fn: modulo10 },
+  ];
+  checks.forEach(c => {
+    const calc = c.fn(c.num), ok = calc === c.dv;
+    if (!ok) valido = false;
+    msgs.push({ label: `${c.label} (dígito verificador)`, ok, detalhe: `Calculado: ${calc} | Encontrado: ${c.dv}` });
+  });
+  const codBarras = chave.substring(0,4)+chave.substring(33,47)+chave.substring(4,9)+chave.substring(10,20)+chave.substring(21,31);
+  const dvGeral = parseInt(chave[32]), dvGeralCalc = modulo11(codBarras, 9);
   const gok = dvGeral === dvGeralCalc;
   if (!gok) valido = false;
   msgs.push({ label: 'Dígito Verificador Geral (Módulo 11)', ok: gok, detalhe: `Calculado: ${dvGeralCalc} | Encontrado: ${dvGeral}` });
-
   return { valido, msgs };
 }
 
 function validarConvenio(chave) {
   if (chave.length !== 48) return { valido: false, msgs: ['Comprimento inválido para convênio.'] };
-  const msgs = [];
-  let valido = true;
-
+  const msgs = []; let valido = true;
   const segs = [
     { num: chave.substring(0, 11),  dv: parseInt(chave[11]),  label: 'Segmento 1' },
     { num: chave.substring(12, 23), dv: parseInt(chave[23]),  label: 'Segmento 2' },
     { num: chave.substring(24, 35), dv: parseInt(chave[35]),  label: 'Segmento 3' },
     { num: chave.substring(36, 47), dv: parseInt(chave[47]),  label: 'Segmento 4' },
   ];
-
   segs.forEach(s => {
-    const calc = modulo10(s.num);
-    const ok   = calc === s.dv;
+    const calc = modulo10(s.num), ok = calc === s.dv;
     if (!ok) valido = false;
     msgs.push({ label: `${s.label} (Módulo 10)`, ok, detalhe: `Calculado: ${calc} | Encontrado: ${s.dv}` });
   });
-
   return { valido, msgs };
 }
 
@@ -547,37 +679,32 @@ function renderValidacao(chave, secId) {
     return;
   }
   const info = detectarTipoBoleto(chave);
-  let resultado;
   if (!info || info.modulo === null) {
     el.innerHTML = `<span class="validacao-item validacao-warn">⚠️ Tamanho incomum (${chave.length} dígitos). Validação matemática não aplicável.</span>`;
     return;
   }
-  resultado = info.modulo === 'bancario' ? validarBoletoBancario(chave) : validarConvenio(chave);
-
+  const resultado = info.modulo === 'bancario' ? validarBoletoBancario(chave) : validarConvenio(chave);
   let html = resultado.msgs.map(m => {
     if (typeof m === 'string') return `<div class="validacao-item validacao-err">❌ ${m}</div>`;
     const cls = m.ok ? 'validacao-ok' : 'validacao-err';
-    const ico = m.ok ? '✅' : '❌';
-    return `<div class="validacao-item ${cls}">${ico} <strong>${m.label}</strong> — ${m.detalhe}</div>`;
+    return `<div class="validacao-item ${cls}">${m.ok?'✅':'❌'} <strong>${m.label}</strong> — ${m.detalhe}</div>`;
   }).join('');
-
   const resumo = resultado.valido
     ? `<div class="validacao-item validacao-ok" style="margin-top:.5rem;font-weight:700;border-top:1px solid var(--border);padding-top:.5rem;">✅ Boleto VÁLIDO (Matematicamente correto)</div>`
     : `<div class="validacao-item validacao-err" style="margin-top:.5rem;font-weight:700;border-top:1px solid var(--border);padding-top:.5rem;">❌ Boleto INVÁLIDO (Numeração corrompida ou falsa)</div>
-       <div style="font-size:0.85rem; color:var(--warning); margin-top:0.5rem; background: rgba(255,170,0,0.1); padding: 0.75rem; border-radius: 6px; line-height: 1.5; border: 1px solid rgba(255,170,0,0.3);">
-         ℹ️ <strong>Atenção:</strong> Se o quadro de comparação acima estiver OK, significa que os textos são iguais, mas <strong>a matemática do boleto falhou</strong> (ex: OCR errou um número ou o boleto foi gerado com defeito).
+       <div style="font-size:.85rem;color:var(--warning);margin-top:.5rem;background:rgba(255,170,0,.1);padding:.75rem;border-radius:6px;line-height:1.5;border:1px solid rgba(255,170,0,.3);">
+         ℹ️ <strong>Atenção:</strong> Se o quadro de comparação estiver OK, os textos são iguais mas a <strong>matemática falhou</strong> (OCR errou um número ou boleto gerado com defeito).
        </div>`;
-
   el.innerHTML = html + resumo;
   return resultado;
 }
 
 // ==== EXTRAÇÃO DE LINHA DIGITÁVEL ====
 function extrairLinhaDigitavel(texto) {
+  if (!texto) return null;
   const regexFmt = /\d{5}\.\d{5}\s+\d{5}\.\d{6}\s+\d\s+\d{14,}/;
   const m = texto.match(regexFmt);
   if (m) return m[0].replace(/\D/g, '');
-  
   const seqs = texto.match(/\d[\d\s]{42,50}\d/g);
   if (seqs) {
     for (const s of seqs) {
@@ -588,17 +715,16 @@ function extrairLinhaDigitavel(texto) {
   return null;
 }
 
-// ==== GERAÇÃO DO HTML DE DÍGITOS ====
+// ==== HTML DÍGITOS ====
 function gerarHTML(str, referencia, maxLen) {
   if (!str && !referencia) return '<em style="color:var(--text-muted);font-style:italic">— vazio —</em>';
   let html = '';
   for (let i = 0; i < maxLen; i++) {
-    const c    = str[i];
-    const cRef = referencia ? referencia[i] : undefined;
+    const c = str[i], cRef = referencia ? referencia[i] : undefined;
     if (c === undefined) {
-      html += `<span class="digit-diff digit-pad" aria-label="dígito ausente na posição ${i + 1}" title="Posição ${i + 1} ausente">-</span>`;
+      html += `<span class="digit-diff digit-pad" title="Posição ${i+1} ausente">-</span>`;
     } else if (cRef === undefined || c !== cRef) {
-      html += `<span class="digit-diff" aria-label="dígito divergente na posição ${i + 1}" title="Divergência na posição ${i + 1}">${c}</span>`;
+      html += `<span class="digit-diff" title="Divergência na posição ${i+1}">${c}</span>`;
     } else {
       html += `<span>${c}</span>`;
     }
@@ -616,9 +742,7 @@ function copiarChave(tipo, btnEl) {
     btnEl.style.borderColor = 'var(--success)';
     showToast('Chave copiada!', 'success');
     setTimeout(() => { btnEl.innerHTML = orig; btnEl.style.color = ''; btnEl.style.borderColor = ''; }, 2000);
-  }).catch(e => {
-    showToast('Falha ao copiar.', 'error');
-  });
+  }).catch(() => showToast('Falha ao copiar.', 'error'));
 }
 
 // ==== HISTÓRICO ====
@@ -626,39 +750,38 @@ const HIST_KEY = 'comparador_historico';
 const HIST_MAX = 10;
 
 function carregarHistorico() {
-  try { return JSON.parse(localStorage.getItem(HIST_KEY) || '[]'); }
-  catch (e) { return []; }
+  try { return JSON.parse(localStorage.getItem(HIST_KEY) || '[]'); } catch { return []; }
 }
 
-function salvarEntradaHistorico(s, b, identicos) {
+function salvarEntradaHistorico(s, b, identicos, infoBoleto) {
   if (!s && !b) return;
   const hist = carregarHistorico();
   hist.unshift({
     data: new Date().toLocaleString('pt-BR'),
     resultado: identicos ? 'OK' : 'DIFERENTE',
     sienge: s.substring(0, 20),
-    boleto: b.substring(0, 20)
+    boleto: b.substring(0, 20),
+    valor: infoBoleto?.valor || '—',
+    venc:  infoBoleto?.vencimento || '—'
   });
   if (hist.length > HIST_MAX) hist.pop();
-  try { localStorage.setItem(HIST_KEY, JSON.stringify(hist)); } catch (e) {}
+  try { localStorage.setItem(HIST_KEY, JSON.stringify(hist)); } catch {}
   renderHistorico();
 }
 
 function renderHistorico() {
-  const hist = carregarHistorico();
+  const hist  = carregarHistorico();
   const lista = document.getElementById('historico-lista');
   document.getElementById('hist-count').textContent = hist.length;
-
   if (hist.length === 0) {
     lista.innerHTML = '<div class="hist-empty">Nenhuma comparação no histórico.</div>';
     return;
   }
-
-  lista.innerHTML = hist.map((h) =>
+  lista.innerHTML = hist.map(h =>
     `<div class="hist-item">
-      <span class="${h.resultado === 'OK' ? 'hist-ok' : 'hist-diff'}">${h.resultado === 'OK' ? '✅ OK' : '❌ DIFERENTE'}</span>
+      <span class="${h.resultado === 'OK' ? 'hist-ok' : 'hist-diff'}">${h.resultado === 'OK' ? '✅ OK' : '❌ DIFE'}</span>
       <span class="hist-data">${h.data}</span>
-      <span class="hist-preview">S: ${h.sienge}… | B: ${h.boleto}…</span>
+      <span class="hist-preview">S: ${h.sienge}… | B: ${h.boleto}… | Venc: ${h.venc} | ${h.valor}</span>
     </div>`
   ).join('');
 }
@@ -667,6 +790,7 @@ document.getElementById('historico-toggle').addEventListener('click', function()
   const lista = document.getElementById('historico-lista');
   const aberto = lista.classList.toggle('visible');
   this.classList.toggle('open', aberto);
+  this.setAttribute('aria-expanded', aberto);
 });
 renderHistorico();
 
@@ -678,25 +802,22 @@ function comparar() {
   chaveLimpaSienge = normalizar(rawS);
   chaveLimpaBoleto = normalizar(rawB);
 
-  if (chaveLimpaSienge.length === 47 || chaveLimpaSienge.length === 48) {
+  if (chaveLimpaSienge.length === 47 || chaveLimpaSienge.length === 48)
     document.getElementById('inp-sienge').value = formatarBoleto(chaveLimpaSienge);
-  }
-  if (chaveLimpaBoleto.length === 47 || chaveLimpaBoleto.length === 48) {
+  if (chaveLimpaBoleto.length === 47 || chaveLimpaBoleto.length === 48)
     document.getElementById('inp-boleto').value = formatarBoleto(chaveLimpaBoleto);
-  }
 
   atualizarContador('inp-sienge', 'counter-sienge');
   atualizarContador('inp-boleto', 'counter-boleto');
 
   if (!chaveLimpaSienge && !chaveLimpaBoleto) {
     document.getElementById('resultado-card').style.display = 'none';
-    document.getElementById('btn-exportar').style.display = 'none';
+    document.getElementById('btn-exportar').style.display   = 'none';
     return;
   }
 
   const maxLen = Math.max(chaveLimpaSienge.length, chaveLimpaBoleto.length);
   let totalDiv = 0, primeiraDiv = -1;
-
   for (let i = 0; i < maxLen; i++) {
     if (chaveLimpaSienge[i] !== chaveLimpaBoleto[i]) {
       totalDiv++;
@@ -706,23 +827,26 @@ function comparar() {
 
   const identicos = chaveLimpaSienge === chaveLimpaBoleto;
   const tamDif    = chaveLimpaSienge.length !== chaveLimpaBoleto.length;
+  const visualS   = formatarBoleto(chaveLimpaSienge) || rawS;
+  const visualB   = formatarBoleto(chaveLimpaBoleto) || rawB;
+  const maxLenVis = Math.max(visualS.length, visualB.length);
 
-  const visualSienge = formatarBoleto(chaveLimpaSienge) || rawS;
-  const visualBoleto = formatarBoleto(chaveLimpaBoleto) || rawB;
-  const maxLenVis = Math.max(visualSienge.length, visualBoleto.length);
-
-  document.getElementById('out-sienge').innerHTML = gerarHTML(visualSienge, visualBoleto, maxLenVis);
-  document.getElementById('out-boleto').innerHTML = gerarHTML(visualBoleto, visualSienge, maxLenVis);
+  document.getElementById('out-sienge').innerHTML = gerarHTML(visualS, visualB, maxLenVis);
+  document.getElementById('out-boleto').innerHTML = gerarHTML(visualB, visualS, maxLenVis);
 
   const tipoS = detectarTipoBoleto(chaveLimpaSienge);
   const tipoB = detectarTipoBoleto(chaveLimpaBoleto);
   document.getElementById('tipo-badge-sienge').innerHTML = renderTipoBadge(tipoS);
   document.getElementById('tipo-badge-boleto').innerHTML = renderTipoBadge(tipoB);
 
-  const statusEl = document.getElementById('out-status');
-  statusEl.innerHTML = identicos
+  document.getElementById('out-status').innerHTML = identicos
     ? `<span class="status-badge status-ok">✅ OK – As chaves são idênticas.</span>`
     : `<span class="status-badge status-diff">❌ DIFERENTE – As chaves não coincidem.</span>`;
+
+  // Usar boleto (campo direito) como fonte primária das informações
+  const chavePrimaria = chaveLimpaBoleto || chaveLimpaSienge;
+  renderInfoBoleto(chavePrimaria);
+  const infoBoleto = decodificarBoleto(chavePrimaria);
 
   const resV1 = renderValidacao(chaveLimpaSienge, 'out-validacao');
 
@@ -751,93 +875,162 @@ function comparar() {
     sienge: chaveLimpaSienge, boleto: chaveLimpaBoleto,
     identicos, totalDiv, primeiraDiv, tamDif,
     tipoS: tipoS?.descricao || '—', tipoB: tipoB?.descricao || '—',
-    validacaoSienge: resV1
+    validacaoSienge: resV1,
+    infoBoleto
   };
 
-  salvarEntradaHistorico(chaveLimpaSienge, chaveLimpaBoleto, identicos);
+  salvarEntradaHistorico(chaveLimpaSienge, chaveLimpaBoleto, identicos, infoBoleto);
   document.getElementById('resultado-card').style.display = 'block';
-  document.getElementById('btn-exportar').style.display = 'inline-flex';
+  document.getElementById('btn-exportar').style.display   = 'inline-flex';
 }
 
+// ==== LIMPAR (BUG FIX: limpa debounceTimer) ====
 function limpar() {
+  clearTimeout(debounceTimer);
+  debounceTimer = null;
   document.getElementById('inp-sienge').value = '';
   document.getElementById('inp-boleto').value = '';
   document.getElementById('resultado-card').style.display = 'none';
-  document.getElementById('btn-exportar').style.display = 'none';
-  document.getElementById('counter-sienge').textContent = '0 dígitos';
-  document.getElementById('counter-sienge').className = 'digit-counter';
-  document.getElementById('counter-boleto').textContent = '0 dígitos';
-  document.getElementById('counter-boleto').className = 'digit-counter';
+  document.getElementById('btn-exportar').style.display   = 'none';
+  ['counter-sienge','counter-boleto'].forEach(id => {
+    const el = document.getElementById(id);
+    el.textContent = '0 dígitos';
+    el.className   = 'digit-counter';
+  });
   chaveLimpaSienge = '';
   chaveLimpaBoleto = '';
   ultimoResultado  = null;
+  document.getElementById('out-info-boleto').innerHTML =
+    '<div style="color:var(--text-muted);font-size:.9rem;font-style:italic;">— Disponível após comparação com boleto válido —</div>';
   document.getElementById('inp-sienge').focus();
 }
 
+// ==== EXPORTAR PDF (melhorado com informações do boleto) ====
 function exportarPDF() {
-  if (!ultimoResultado || typeof window.jspdf === 'undefined') return;
+  if (!ultimoResultado || typeof window.jspdf === 'undefined') {
+    showToast('jsPDF não carregado ainda.', 'error');
+    return;
+  }
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
-  const r = ultimoResultado;
-  let y = 20, lm = 15, pw = 180;
+  const r   = ultimoResultado;
+  const inf = r.infoBoleto;
+  let y = 18, lm = 15, pw = 180;
 
-  const addLine = (txt, size = 10, bold = false, cor = [220,220,220]) => {
-    doc.setFontSize(size);
-    doc.setFont('helvetica', bold ? 'bold' : 'normal');
-    doc.setTextColor(...cor);
-    const linhas = doc.splitTextToSize(txt, pw);
+  const addLine = (txt, size=10, bold=false, cor=[220,220,220], extra=0) => {
+    if (y > 275) { doc.addPage(); doc.setFillColor(10,14,26); doc.rect(0,0,210,297,'F'); y = 18; }
+    doc.setFontSize(size); doc.setFont('helvetica', bold ? 'bold' : 'normal'); doc.setTextColor(...cor);
+    const linhas = doc.splitTextToSize(String(txt), pw);
     doc.text(linhas, lm, y);
-    y += linhas.length * (size * 0.45);
+    y += linhas.length * (size * 0.45) + extra;
   };
 
+  // Fundo escuro
   doc.setFillColor(10, 14, 26);
   doc.rect(0, 0, 210, 297, 'F');
-  addLine('COMPARADOR PREMIUM DE BOLETOS', 18, true, [0, 212, 255]);
-  addLine(`Data/Hora: ${r.data}`, 10, false, [107, 116, 148]); y += 6;
 
-  addLine(`SIENGE: ${formatarBoleto(r.sienge)}`, 10, false, [255,255,255]); y += 3;
-  addLine(`BOLETO: ${formatarBoleto(r.boleto)}`, 10, false, [255,255,255]); y += 6;
+  // Cabeçalho
+  addLine('COMPARADOR PREMIUM DE BOLETOS', 18, true, [0,212,255], 2);
+  addLine('OCR Edition — Relatório de Validação', 10, false, [107,116,148], 2);
+  addLine(`Gerado em: ${r.data}`, 9, false, [107,116,148], 6);
 
-  addLine('RESULTADO', 11, true, [0,212,255]);
-  if (r.identicos) {
-    addLine('✅ CHAVES IDÊNTICAS', 11, true, [0, 255, 136]);
-  } else {
-    addLine('❌ CHAVES DIFERENTES', 11, true, [255, 71, 87]);
+  // Separador
+  doc.setDrawColor(0,212,255); doc.setLineWidth(0.3); doc.line(lm, y, lm+pw, y); y += 6;
+
+  // Chaves
+  addLine('CHAVES COMPARADAS', 11, true, [0,212,255], 2);
+  addLine(`SIENGE: ${formatarBoleto(r.sienge) || '—'}`, 9, false, [180,180,180], 2);
+  addLine(`BOLETO: ${formatarBoleto(r.boleto) || '—'}`, 9, false, [180,180,180], 5);
+
+  // Resultado
+  doc.setDrawColor(50,50,70); doc.line(lm, y, lm+pw, y); y += 5;
+  addLine('RESULTADO', 11, true, [0,212,255], 2);
+  if (r.identicos) addLine('✅  CHAVES IDÊNTICAS', 12, true, [0,255,136], 4);
+  else             addLine('❌  CHAVES DIFERENTES', 12, true, [255,71,87], 4);
+
+  if (!r.identicos) {
+    addLine(`• Primeira divergência na posição: ${r.primeiraDiv > 0 ? r.primeiraDiv : 'N/A'}`, 9, false, [180,180,180]);
+    addLine(`• Total de dígitos divergentes: ${r.totalDiv}`, 9, false, [180,180,180], 4);
   }
-  
+
+  // Informações do boleto
+  if (inf) {
+    doc.setDrawColor(50,50,70); doc.line(lm, y, lm+pw, y); y += 5;
+    addLine('INFORMAÇÕES DECODIFICADAS DO BOLETO', 11, true, [0,212,255], 2);
+    addLine(`• Banco/Emissor: ${inf.nomeBanco || '—'}${inf.codigoBanco ? ' (Cód. '+inf.codigoBanco+')' : ''}`, 9, false, [180,180,180]);
+    addLine(`• Tipo: ${inf.tipo || '—'}`, 9, false, [180,180,180]);
+    addLine(`• Valor: ${inf.valor || '—'}`, 9, false, inf.valorNum ? [0,255,136] : [180,180,180]);
+    addLine(`• Vencimento: ${inf.vencimento || '—'}`, 9, false, [180,180,180]);
+    if (inf.statusVencLabel) addLine(`• Status Vencimento: ${inf.statusVencLabel}`, 9, false,
+      inf.statusVenc === 'vencido' ? [255,71,87] :
+      inf.statusVenc === 'hoje'    ? [255,170,0] :
+      inf.statusVenc === 'urgente' ? [255,170,0] : [0,255,136]);
+    if (inf.codigoBarras && inf.codigoBarras.length > 10) {
+      y += 2;
+      addLine(`• Cód. Barras: ${inf.codigoBarras}`, 8, false, [107,116,148], 2);
+    }
+    y += 2;
+  }
+
+  // Tipos
+  doc.setDrawColor(50,50,70); doc.line(lm, y, lm+pw, y); y += 5;
+  addLine('TIPOS DETECTADOS', 11, true, [0,212,255], 2);
+  addLine(`• SIENGE: ${r.tipoS}`, 9, false, [180,180,180]);
+  addLine(`• BOLETO: ${r.tipoB}`, 9, false, [180,180,180], 4);
+
+  // Rodapé PDF
+  doc.setDrawColor(0,212,255); doc.line(lm, 285, lm+pw, 285);
+  doc.setFontSize(8); doc.setFont('helvetica','normal'); doc.setTextColor(107,116,148);
+  doc.text('Feito por HAlexandre — Comparador Premium de Boletos OCR Edition', lm, 291);
+
   doc.save(`boleto_relatorio_${Date.now()}.pdf`);
+  showToast('PDF exportado com sucesso!', 'success');
 }
 
+// ==== DEBOUNCE ====
 function compararDebounced() {
   clearTimeout(debounceTimer);
   debounceTimer = setTimeout(comparar, 300);
 }
 
-document.getElementById('inp-sienge').addEventListener('input', () => { atualizarContador('inp-sienge', 'counter-sienge'); compararDebounced(); });
-document.getElementById('inp-boleto').addEventListener('input', () => { atualizarContador('inp-boleto', 'counter-boleto'); compararDebounced(); });
+document.getElementById('inp-sienge').addEventListener('input', () => { atualizarContador('inp-sienge','counter-sienge'); compararDebounced(); });
+document.getElementById('inp-boleto').addEventListener('input', () => { atualizarContador('inp-boleto','counter-boleto'); compararDebounced(); });
 
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') limpar(); 
-  if (e.ctrlKey && e.key === 'Enter') { comparar(); document.getElementById('resultado-card').scrollIntoView(); }
+  if (e.key === 'Escape') limpar();
+  if (e.ctrlKey && e.key === 'Enter') { comparar(); document.getElementById('resultado-card')?.scrollIntoView({behavior:'smooth'}); }
 });
 
-// ==== ROTAÇÃO E SCANNER ====
+// ==== ROTAÇÃO ====
 const rotationState = { current: 0, objectURL: null };
 
 const Rotator = {
-  dom: { modal: document.getElementById('rotation-modal'), img: document.getElementById('rotatable-image'), slider: document.getElementById('rotation-slider'), angleDisplay: document.getElementById('angle-display'), quickBtns: document.querySelectorAll('.btn-quick'), btnConfirm: document.getElementById('btn-confirm-rotation'), btnCancel: document.getElementById('btn-cancel-rotation'), btnClose: document.getElementById('btn-close-modal') },
+  dom: {
+    modal: document.getElementById('rotation-modal'),
+    img:   document.getElementById('rotatable-image'),
+    slider: document.getElementById('rotation-slider'),
+    angleDisplay: document.getElementById('angle-display'),
+    quickBtns: document.querySelectorAll('.btn-quick'),
+    btnConfirm: document.getElementById('btn-confirm-rotation'),
+    btnCancel:  document.getElementById('btn-cancel-rotation'),
+    btnClose:   document.getElementById('btn-close-modal')
+  },
   init() {
     this.dom.slider.addEventListener('input', e => this.setAngle(parseFloat(e.target.value)));
-    this.dom.quickBtns.forEach(btn => btn.addEventListener('click', e => this.setAngle(parseFloat(e.target.dataset.angle) === 0 ? 0 : rotationState.current + parseFloat(e.target.dataset.angle))));
+    this.dom.quickBtns.forEach(btn => btn.addEventListener('click', e => {
+      const a = parseFloat(e.target.dataset.angle);
+      this.setAngle(a === 0 ? 0 : rotationState.current + a);
+    }));
     this.dom.btnCancel.addEventListener('click', () => this.hide());
-    this.dom.btnClose.addEventListener('click', () => this.hide());
+    this.dom.btnClose.addEventListener('click',  () => this.hide());
     this.dom.btnConfirm.addEventListener('click', async () => {
       this.dom.btnConfirm.disabled = true;
       try {
         const blob = await this.getRotatedBlob();
         this.hide();
         Scanner.processImage(blob, document.getElementById('inp-boleto'));
-      } catch(e) {} finally { this.dom.btnConfirm.disabled = false; }
+      } catch(e) {}
+      finally { this.dom.btnConfirm.disabled = false; }
     });
   },
   open(file) {
@@ -847,9 +1040,7 @@ const Rotator = {
     this.setAngle(0);
     this.dom.modal.classList.add('active');
   },
-  hide() {
-    this.dom.modal.classList.remove('active');
-  },
+  hide() { this.dom.modal.classList.remove('active'); },
   setAngle(angle) {
     rotationState.current = angle;
     this.dom.slider.value = angle;
@@ -857,12 +1048,16 @@ const Rotator = {
     this.dom.angleDisplay.textContent = `${angle.toFixed(1)}°`;
   },
   getRotatedBlob() {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const canvas = document.createElement('canvas'), ctx = canvas.getContext('2d'), img = new Image();
       img.onload = () => {
-        const rad = (rotationState.current * Math.PI)/180, sin = Math.abs(Math.sin(rad)), cos = Math.abs(Math.cos(rad));
-        canvas.width = img.width * cos + img.height * sin; canvas.height = img.width * sin + img.height * cos;
-        ctx.translate(canvas.width/2, canvas.height/2); ctx.rotate(rad); ctx.drawImage(img, -img.width/2, -img.height/2);
+        const rad = rotationState.current * Math.PI / 180,
+              sin = Math.abs(Math.sin(rad)), cos = Math.abs(Math.cos(rad));
+        canvas.width  = img.width * cos + img.height * sin;
+        canvas.height = img.width * sin + img.height * cos;
+        ctx.translate(canvas.width/2, canvas.height/2);
+        ctx.rotate(rad);
+        ctx.drawImage(img, -img.width/2, -img.height/2);
         canvas.toBlob(blob => resolve(blob), 'image/png');
       };
       img.src = rotationState.objectURL;
@@ -871,6 +1066,7 @@ const Rotator = {
 };
 Rotator.init();
 
+// ==== PDF.JS READER ====
 const PDFReader = {
   async extract(file) {
     return new Promise((resolve, reject) => {
@@ -881,6 +1077,7 @@ const PDFReader = {
           pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
           this._doExtract(file).then(resolve).catch(reject);
         };
+        script.onerror = reject;
         document.head.appendChild(script);
       } else {
         this._doExtract(file).then(resolve).catch(reject);
@@ -888,22 +1085,23 @@ const PDFReader = {
     });
   },
   async _doExtract(file) {
-    const arrayBuffer = await file.arrayBuffer();
-    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    const buf = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
     let fullText = '';
     for (let p = 1; p <= pdf.numPages; p++) {
-      const page = await pdf.getPage(p), content = await page.getTextContent();
+      const page    = await pdf.getPage(p);
+      const content = await page.getTextContent();
       fullText += content.items.map(i => i.str).join(' ') + '\n';
     }
     return fullText;
   }
 };
 
+// ==== SCANNER ====
 const Scanner = {
   async processImage(blobOrFile, targetInput) {
     const statusEl = document.getElementById('scanner-status');
-    targetInput.disabled = true; statusEl.style.display = 'block';
-    
+    targetInput.disabled = true; statusEl.style.display = 'block'; statusEl.innerText = '⏳ Lendo...';
     try {
       if (blobOrFile.type === 'application/pdf') {
         try {
@@ -912,23 +1110,22 @@ const Scanner = {
           if (linhaDigitavel) {
             targetInput.value = formatarBoleto(linhaDigitavel);
             statusEl.innerText = '✅ PDF Extraído!';
-            setTimeout(comparar, 100); return; 
-          } else throw new Error();
-        } catch (pdfErr) {
-          showToast('Falha ao ler texto do PDF.', 'error');
-          return;
+            setTimeout(comparar, 100); return;
+          } else throw new Error('Linha não encontrada');
+        } catch {
+          showToast('Falha ao ler texto do PDF.', 'error'); return;
         }
       }
 
       let extractedText = '', resultFound = false;
-      const objectURL = URL.createObjectURL(blobOrFile);
+      const objectURL    = URL.createObjectURL(blobOrFile);
       const preprocessed = await this.preprocessImage(objectURL);
-      
+
       try {
         const codeReader = new ZXing.BrowserMultiFormatReader();
         const result = await codeReader.decodeFromImageUrl(preprocessed);
-        if (result && result.getText()) { extractedText = result.getText(); resultFound = true; }
-      } catch (e) {}
+        if (result?.getText()) { extractedText = result.getText(); resultFound = true; }
+      } catch {}
 
       if (!resultFound) {
         statusEl.innerText = '👁️ OCR...';
@@ -939,8 +1136,8 @@ const Scanner = {
         const linhaOCR = extrairLinhaDigitavel(data.text);
         if (linhaOCR) { extractedText = linhaOCR; resultFound = true; }
         else {
-           const nums = data.text.match(/\d+/g);
-           if (nums && nums.length > 0) { extractedText = nums.join(''); resultFound = true; }
+          const nums = data.text.match(/\d+/g);
+          if (nums?.length) { extractedText = nums.join(''); resultFound = true; }
         }
       }
 
@@ -949,21 +1146,22 @@ const Scanner = {
         statusEl.innerText = '✅ Concluído!';
         setTimeout(comparar, 100);
       } else showToast('Nenhum número válido encontrado.', 'error');
-      
-    } catch (e) {
-      showToast('Erro no processamento.', 'error');
-    } finally {
-      targetInput.disabled = false; setTimeout(() => { statusEl.style.display = 'none'; }, 2000);
+
+    } catch { showToast('Erro no processamento.', 'error'); }
+    finally {
+      targetInput.disabled = false;
+      setTimeout(() => { statusEl.style.display = 'none'; }, 2000);
     }
   },
 
   preprocessImage(src) {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const img = new Image();
       img.onload = () => {
         const canvas = document.createElement('canvas'), ctx = canvas.getContext('2d');
         canvas.width = img.width; canvas.height = img.height;
-        ctx.filter = 'grayscale(1) contrast(1.6)'; ctx.drawImage(img, 0, 0);
+        ctx.filter = 'grayscale(1) contrast(1.6)';
+        ctx.drawImage(img, 0, 0);
         resolve(canvas.toDataURL('image/png'));
       };
       img.src = src;
@@ -971,59 +1169,38 @@ const Scanner = {
   },
 
   setupListeners() {
-    const inp = document.getElementById('inp-boleto');
+    const inp        = document.getElementById('inp-boleto');
     const fileUpload = document.getElementById('file-upload');
 
-    // Auxiliar centralizado para processar os arquivos
-    const handleFile = (file) => {
+    const handleFile = file => {
       if (!file) return;
-      if (file.type.startsWith('image/')) Rotator.open(file);
-      else if (file.type === 'application/pdf') this.processImage(file, inp);
+      if (file.type.startsWith('image/'))         Rotator.open(file);
+      else if (file.type === 'application/pdf')   this.processImage(file, inp);
       else showToast('Formato não suportado. Use PDF ou Imagem.', 'error');
     };
 
-    // Nova Lógica: Input File Explícito (O Botão "Anexar")
-    fileUpload.addEventListener('change', e => {
-      handleFile(e.target.files[0]);
-      e.target.value = ''; // Reset
-    });
+    fileUpload.addEventListener('change', e => { handleFile(e.target.files[0]); e.target.value = ''; });
 
-    // Nova Lógica: Colar mais robusta para SO e Browser
     inp.addEventListener('paste', e => {
-      // 1º Tentativa: Ler a lista real de ficheiros (Quando copiamos no Windows Explorer / Finder Mac)
       const files = e.clipboardData?.files;
-      if (files && files.length > 0) {
-        const file = Array.from(files).find(f => f.type.startsWith('image/') || f.type === 'application/pdf');
-        if (file) {
-          e.preventDefault();
-          handleFile(file);
-          return;
-        }
+      if (files?.length) {
+        const f = Array.from(files).find(f => f.type.startsWith('image/') || f.type === 'application/pdf');
+        if (f) { e.preventDefault(); handleFile(f); return; }
       }
-      
-      // 2º Tentativa: Fallback para Itens (Normalmente útil para PrintScreen / Snip & Sketch)
       const items = e.clipboardData?.items;
-      if (items && items.length > 0) {
+      if (items?.length) {
         const item = Array.from(items).find(i => i.type.startsWith('image/') || i.type === 'application/pdf');
-        if (item) {
-          const file = item.getAsFile();
-          if (file) {
-             e.preventDefault();
-             handleFile(file);
-          }
-        }
+        if (item) { const f = item.getAsFile(); if (f) { e.preventDefault(); handleFile(f); } }
       }
     });
 
-    // Drag & Drop
     inp.addEventListener('dragover',  e => { e.preventDefault(); inp.classList.add('dragover'); });
     inp.addEventListener('dragleave', e => { e.preventDefault(); inp.classList.remove('dragover'); });
     inp.addEventListener('drop', e => {
-      e.preventDefault();
-      inp.classList.remove('dragover');
-      if (e.dataTransfer?.files?.length > 0) {
-        const file = Array.from(e.dataTransfer.files).find(f => f.type.startsWith('image/') || f.type === 'application/pdf');
-        handleFile(file);
+      e.preventDefault(); inp.classList.remove('dragover');
+      if (e.dataTransfer?.files?.length) {
+        const f = Array.from(e.dataTransfer.files).find(f => f.type.startsWith('image/') || f.type === 'application/pdf');
+        handleFile(f);
       }
     });
   }
